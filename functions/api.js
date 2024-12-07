@@ -1,6 +1,6 @@
 import express from 'express';
 import ServerlessHttp from "serverless-http";
-const axios = require('axios');
+import axios from 'axios';
 import { XMLParser } from "fast-xml-parser";
 
 const app = express();
