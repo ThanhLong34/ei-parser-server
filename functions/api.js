@@ -2,8 +2,15 @@ import express from 'express';
 import ServerlessHttp from "serverless-http";
 import axios from 'axios';
 import { XMLParser } from "fast-xml-parser";
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors({
+  origin: '*',
+  methods: '*',
+  allowedHeaders: '*',
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
