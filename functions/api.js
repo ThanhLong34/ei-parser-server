@@ -48,29 +48,31 @@ app.post('/.netlify/functions/api', async (req, res) => {
     }
     
     const response = await Promise.all(apisMap.map(async ([url, params]) => {
-      const xmlRes = await axios.get(url, { params })
-      const dataParsed = parser.parse(xmlRes.data)
-      
-      const fileInfo = dataParsed['FileInfo']
-      const contentBase64 = fileInfo['ContentBase64String']
-      
-      let contentDecoded = 'Not found content to parse !!!'
-      
-      if (fileInfo && contentBase64) {
-        const buffer = Buffer.from(contentBase64, 'base64');
-        contentDecoded = buffer.toString('utf8');
-      }
-      
-      return {
-        ...dataParsed,
-        contentDecoded,
-      }
+      try {
+        const xmlRes = await axios.get(url, { params })
+        const dataParsed = parser.parse(xmlRes.data)
+        
+        const fileInfo = dataParsed['FileInfo']
+        const contentBase64 = fileInfo['ContentBase64String']
+        
+        let contentDecoded = 'Not found content to parse !!!'
+        
+        if (fileInfo && contentBase64) {
+          const buffer = Buffer.from(contentBase64, 'base64');
+          contentDecoded = buffer.toString('utf8');
+        }
+        
+        return {
+          ...dataParsed,
+          contentDecoded,
+        }
+      } catch (err) {}
     }));
     
-    res.json(response);
+    res.json(response.filter(i => i));
   } catch (error) {
     console.error('Error calling the API:', error);
-    res.status(500).send('Error fetching data from Parcel URL');
+    res.status(500).send('Error fetching data from API');
   }
 });
 
